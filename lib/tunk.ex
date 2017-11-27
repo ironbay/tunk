@@ -1,31 +1,28 @@
-defmodule Tunk do
+defmodule Tunk.Router do
 	use Plug.Router
+	require Logger
 
-	plug :match
+	plug :match 
 	plug :dispatch
 
-	get "/hello" do
-		Plug.Conn.send_resp(conn, 200, "ok")		
+	def init(options), do: options
+
+	get "/" do
+		conn = fetch_query_params(conn)
+		send_resp(conn, 200, "received #{inspect(conn.params)}")
 	end
 
-	def child_spec() do
-		Plug.Adapters.Cowboy2.child_spec(:http, __MODULE__, [], [port: 13000])
+	get "https://alanrice.pagekite.me/gcp/message" do
+		send_resp(conn, 200, "received #{inspect(conn.params)}")
 	end
 
-  @moduledoc """
-  Documentation for Tunk.
-  """
 
-  @doc """
-  Hello world.
+	def start_link() do
+		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
+	end
 
-  ## Examples
-
-      iex> Tunk.hello
-      :world
-
-  """
-  def hello do
-    :world
-  end
+	match _ do
+		IO.inspect(conn.params)
+		send_resp(conn, 404, "ooops")
+	end
 end
