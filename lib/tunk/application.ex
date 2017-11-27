@@ -8,7 +8,8 @@ defmodule Tunk.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      # Starts a worker by calling: Tunk.Worker.start_link(arg)
+		Tunk.child_spec()
+		# Starts a worker by calling: Tunk.Worker.start_link(arg)
       # {Tunk.Worker, arg},
     ]
 

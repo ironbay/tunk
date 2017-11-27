@@ -8,6 +8,10 @@ defmodule Tunk do
 		Plug.Conn.send_resp(conn, 200, "ok")		
 	end
 
+	def child_spec() do
+		Plug.Adapters.Cowboy2.child_spec(:http, __MODULE__, [], [port: 13000])
+	end
+
   @moduledoc """
   Documentation for Tunk.
   """
