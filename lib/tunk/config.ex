@@ -1,7 +1,7 @@
 defmodule Tunk.Config do
-	use Fig
+	import Fig
 
-	config :myapp, %{
-		somefield: "broken"
+	config github: %{
+		auth: nil
 	}
 end

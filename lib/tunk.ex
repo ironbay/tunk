@@ -7,55 +7,69 @@ defmodule Tunk.Router do
 
 	def init(options), do: options
 
-	get "/" do
-		conn = fetch_query_params(conn)
-		send_resp(conn, 200, "received #{inspect(conn.params)}")
+	def start_link() do
+		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
 	end
 
 	post "/gcp/message" do
 		{:ok, body , _} = Plug.Conn.read_body(conn)
-
 		body 
 		|> Poison.decode!
 		|> Dynamic.get(["message", "data"])
 		|> Base.decode64!
 		|> Poison.decode!
 		|> IO.inspect
+		|> update_github
 		send_resp(conn, 200, "")
 	end
 
+	def update_github (%{
+		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha}}, 
+		"status" => status, 
+		"images" => images, 
+		"id" => id, 
+		"projectId" => project_id
+	}) do 		
+		info = %{
+			sha: sha, 
+			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
+			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}"
+		}
 
-	def start_link() do
-		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
+		case status do
+			"SUCCESS" -> update_github("success", info)
+			"FAILURE" -> update_github("failure", info)
+			"WORKING" -> update_github("pending", info)
+			_ -> :noop
+		end
+	end 
+
+	def description(status) do
+		case status do
+			"success" -> "Build succeeded" 
+			"failure" -> "Build failed."
+			"pending" -> "Build in progress."
+		end
 	end
 
-	def check_config do
-		IO.inspect Tunk.Config.myapp_somefield()
-	end
-
-	def make_it do
-		base = "https://api.github.com/AlanRice93/tunk/statuses/38418b447d0e2105872fb066e5143d3017b5534a"
-		body = "{
-			\"state\": \"success\",
-			\"target_url\": \"https://example.com/build/status\",
-			\"description\": \"The build succeeded!\",
-			\"context\": \"continuous-integration/jenkins\"
-		  }"
-
-		HTTPotion.post(
-			base, 
-			[
-				headers: [
-					"User-Agent": "AlanRice93",
-					"client_secret": " "
-				], 
-				body: body, 
-			]
+	def update_github(status, info) when status == "SUCCESS" or status == "FAILURE" or status == "WORKING" do
+		Tentacat.Repositories.Statuses.create(
+			System.get_env("GITHUB_USER"), 
+			System.get_env("GITHUB_REPO"), 
+			info.sha,
+			%{
+				"state": info.status, 
+				"target_url": info.target_url, 
+				"description": description(status), 
+				"context": info.context
+				},
+			Tentacat.Client.new(%{
+				access_token: System.get_env("GITHUB_AUTH")
+			})
 		)
-	end
+	end 
 
-	match _ do
-		IO.inspect(conn.params)
-		send_resp(conn, 404, "ooops")
+	def update_github(_status, _info) do
+		:noop
 	end
 end
