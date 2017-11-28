@@ -53,7 +53,6 @@ defmodule Tunk.Router do
 	end
 
 	def update_github(status, info) when status == "success" or status == "failure" or status == "pending" do
-		IO.inspect("234234234234")
 		Tentacat.Repositories.Statuses.create(
 			Tunk.Config.github_user(), 
 			Tunk.Config.github_repo(), 
