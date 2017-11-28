@@ -14,6 +14,7 @@ defmodule Tunk.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Tunk.Supervisor]
-    Supervisor.start_link(children, opts)
+	Tunk.Config.load(Fig.Loader.Env)
+	Supervisor.start_link(children, opts)
   end
 end

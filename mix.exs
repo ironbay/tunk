@@ -24,7 +24,11 @@ defmodule Tunk.Mixfile do
     [
 			{:cowboy, "~> 1.0.0"},
 			{:plug, "~> 0.12"},
-      # {:dep_from_hexpm, "~> 0.3.0"},
+			{:poison, "~> 3.1"}, 
+			{:dynamic_ex, github: "ironbay/dynamic_ex"},
+			{:fig, github: "ironbay/fig"},
+			{:httpotion, "~> 3.0.3"}
+			# {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end

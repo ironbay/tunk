@@ -12,13 +12,43 @@ defmodule Tunk.Router do
 		send_resp(conn, 200, "received #{inspect(conn.params)}")
 	end
 
-	get "https://alanrice.pagekite.me/gcp/message" do
-		send_resp(conn, 200, "received #{inspect(conn.params)}")
+	post "/gcp/message" do
+		{:ok, body , _} = Plug.Conn.read_body(conn)
+
+		body 
+		|> Poison.decode!
+		|> Dynamic.get(["message", "data"])
+		|> Base.decode64!
+		|> Poison.decode!
+		|> IO.inspect
+		send_resp(conn, 200, "")
 	end
 
 
 	def start_link() do
 		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
+	end
+
+	def check_config do
+		IO.inspect Tunk.Config.myapp_somefield()
+	end
+
+	def make_it do
+		base = "https://api.github.com/AlanRice93/tunk/statuses/38418b447d0e2105872fb066e5143d3017b5534a"
+		body = "{
+			\"state\": \"success\",
+			\"target_url\": \"https://example.com/build/status\",
+			\"description\": \"The build succeeded!\",
+			\"context\": \"continuous-integration/jenkins\"
+		  }"
+
+		HTTPotion.post(
+			base, 
+			[
+				headers: ["User-Agent": "AlanRice93"], 
+				body: body
+			]
+		)
 	end
 
 	match _ do
