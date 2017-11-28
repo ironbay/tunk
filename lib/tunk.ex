@@ -19,11 +19,11 @@ defmodule Tunk.Router do
 		|> Base.decode64!
 		|> Poison.decode!
 		|> IO.inspect
-		|> update_github
+		|> process
 		send_resp(conn, 200, "")
 	end
 
-	def update_github (%{
+	def process (%{
 		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha}}, 
 		"status" => status, 
 		"images" => images, 
@@ -52,24 +52,26 @@ defmodule Tunk.Router do
 		end
 	end
 
-	def update_github(status, info) when status == "SUCCESS" or status == "FAILURE" or status == "WORKING" do
+	def update_github(status, info) when status == "success" or status == "failure" or status == "pending" do
+		IO.inspect("234234234234")
 		Tentacat.Repositories.Statuses.create(
-			System.get_env("GITHUB_USER"), 
-			System.get_env("GITHUB_REPO"), 
+			Tunk.Config.github_user(), 
+			Tunk.Config.github_repo(), 
 			info.sha,
 			%{
-				"state": info.status, 
+				"state": status, 
 				"target_url": info.target_url, 
 				"description": description(status), 
 				"context": info.context
 				},
 			Tentacat.Client.new(%{
-				access_token: System.get_env("GITHUB_AUTH")
+				access_token: Tunk.Config.github_auth()
 			})
 		)
 	end 
 
-	def update_github(_status, _info) do
+	def update_github(status, _info) do
+		IO.inspect status
 		:noop
 	end
 end

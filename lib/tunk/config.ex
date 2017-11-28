@@ -1,7 +1,9 @@
 defmodule Tunk.Config do
-	import Fig
+	use Fig
 
-	config github: %{
+	config :github, %{
+		user: nil, 
+		repo: nil, 
 		auth: nil
 	}
 end
