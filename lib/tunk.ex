@@ -47,7 +47,7 @@ defmodule Tunk.Router do
 			[
 				headers: [
 					"User-Agent": "AlanRice93",
-					"client_secret": "30dd71577499c82994833ed713053678a9553167" 	
+					"client_secret": " "
 				], 
 				body: body, 
 			]
