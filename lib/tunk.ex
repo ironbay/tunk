@@ -45,8 +45,11 @@ defmodule Tunk.Router do
 		HTTPotion.post(
 			base, 
 			[
-				headers: ["User-Agent": "AlanRice93"], 
-				body: body
+				headers: [
+					"User-Agent": "AlanRice93",
+					"client_secret": "30dd71577499c82994833ed713053678a9553167" 	
+				], 
+				body: body, 
 			]
 		)
 	end
