@@ -3,7 +3,6 @@ defmodule Tunk.Config do
 
 	config :github, %{
 		user: nil, 
-		repo: nil, 
 		auth: nil
 	}
 end

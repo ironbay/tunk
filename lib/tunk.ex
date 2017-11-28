@@ -24,7 +24,7 @@ defmodule Tunk.Router do
 	end
 
 	def process (%{
-		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha}}, 
+		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha, "repoName" => repo}}, 
 		"status" => status, 
 		"images" => images, 
 		"id" => id, 
@@ -33,7 +33,8 @@ defmodule Tunk.Router do
 		info = %{
 			sha: sha, 
 			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
-			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}"
+			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
+			repo: repo |> String.split("-") |> Enum.at(1)
 		}
 
 		case status do
@@ -55,7 +56,7 @@ defmodule Tunk.Router do
 	def update_github(status, info) when status == "success" or status == "failure" or status == "pending" do
 		Tentacat.Repositories.Statuses.create(
 			Tunk.Config.github_user(), 
-			Tunk.Config.github_repo(), 
+			info.repo, 
 			info.sha,
 			%{
 				"state": status, 
