@@ -29,15 +29,18 @@ defmodule Tunk.Router do
 		"status" => status, 
 		"images" => images, 
 		"id" => id, 
-		"projectId" => project_id
+		"projectId" => project_id, 
+		"source" => %{"repoSource" => %{"branchName" => branch}}
 	}) do 		
 		info = %{
 			sha: sha, 
 			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
 			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
 			repo: repo |> String.split("-") |> Enum.at(1), 
+			owner: repo |> String.split("-") |> Enum.at(2),
 			description: description(status),
-			status: translate(status)
+			status: translate(status), 
+			branch: branch
 		}
 
 		if info.status == "success" or info.status == "failure" or info.status == "pending" do
