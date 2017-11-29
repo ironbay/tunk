@@ -15,6 +15,8 @@ defmodule Tunk.Application do
     # for other strategies and supported options
 	opts = [strategy: :one_for_one, name: Tunk.Supervisor]
 	Tunk.Config.load(Fig.Loader.Env)
+
+	IO.puts("Tunk has started...")
 	Supervisor.start_link(children, opts)
   end
 end
