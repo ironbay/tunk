@@ -50,16 +50,14 @@ defmodule Tunk.Router do
 
 	def translate(status) do
 		case status do
-			"SUCCESS" -> "success" 
-			"FAILURE" -> "failure" 
+			"SUCCESS" -> "success"
+			"FAILURE" -> "failure"
 			"WORKING" -> "pending"
 			_ -> :noop
 		end
 	end
 	
 	def description(status) do
-		IO.inspect(status)
-		IO.inspect("!@#@#!@")
 		case status do
 			"SUCCESS" -> "Build succeeded" 
 			"FAILURE" -> "Build failed."
