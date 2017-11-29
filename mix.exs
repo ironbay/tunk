@@ -29,9 +29,8 @@ defmodule Tunk.Mixfile do
 			{:fig, github: "ironbay/fig"},
 			{:httpotion, "~> 3.0.3"}, 
 			{:tentacat, "~> 0.5"}, 
-			{:distillery, "~> 1.4", runtime: false}
-			# {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+			{:distillery, "~> 1.4", runtime: false},
+			{:slack, "~> 0.12.0"}, 
     ]
   end
 end

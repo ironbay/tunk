@@ -35,14 +35,36 @@ defmodule Tunk.Router do
 			sha: sha, 
 			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
 			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
-			repo: repo |> String.split("-") |> Enum.at(1)
+			repo: repo |> String.split("-") |> Enum.at(1), 
+			description: description(status),
+			status: translate(status)
 		}
 
-		case status do
-			"SUCCESS" -> Github.send("success", info)
-			"FAILURE" -> Github.send("failure", info)
-			"WORKING" -> Github.send("pending", info)
-			_ -> :noop
+		if info.status == "success" or info.status == "failure" or info.status == "pending" do
+			Github.send(info)
+			Tunk.Slack.send(info)
+		else 
+			:noop
 		end
 	end 
+
+	def translate(status) do
+		case status do
+			"SUCCESS" -> "success" 
+			"FAILURE" -> "failure" 
+			"WORKING" -> "pending"
+			_ -> :noop
+		end
+	end
+	
+	def description(status) do
+		IO.inspect(status)
+		IO.inspect("!@#@#!@")
+		case status do
+			"SUCCESS" -> "Build succeeded" 
+			"FAILURE" -> "Build failed."
+			"WORKING" -> "Build in progress."
+			_ -> :noop
+		end
+	end
 end

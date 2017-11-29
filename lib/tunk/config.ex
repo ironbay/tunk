@@ -5,4 +5,9 @@ defmodule Tunk.Config do
 		user: nil, 
 		auth: nil
 	}
+
+	config :slack, %{
+		token: nil, 
+		channel: nil
+	}
 end
