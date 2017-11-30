@@ -38,7 +38,6 @@ defmodule Tunk.Router do
 			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
 			repo: repo |> String.split("-") |> Enum.at(1), 
 			owner: repo |> String.split("-") |> Enum.at(2),
-			description: description(status),
 			status: translate(status), 
 			branch: branch
 		}
@@ -56,15 +55,6 @@ defmodule Tunk.Router do
 			"SUCCESS" -> "success"
 			"FAILURE" -> "failure"
 			"WORKING" -> "pending"
-			_ -> :noop
-		end
-	end
-	
-	def description(status) do
-		case status do
-			"SUCCESS" -> "Build succeeded" 
-			"FAILURE" -> "Build failed."
-			"WORKING" -> "Build in progress."
 			_ -> :noop
 		end
 	end
