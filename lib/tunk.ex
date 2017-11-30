@@ -14,6 +14,7 @@ defmodule Tunk.Router do
 
 	post "/gcp/message" do
 		{:ok, body , _} = Plug.Conn.read_body(conn)
+		
 		body 
 		|> Poison.decode!
 		|> Dynamic.get(["message", "data"])
@@ -39,7 +40,8 @@ defmodule Tunk.Router do
 			repo: repo |> String.split("-") |> Enum.at(1), 
 			owner: repo |> String.split("-") |> Enum.at(2),
 			status: translate(status), 
-			branch: branch
+			branch: branch, 
+			images: images
 		}
 
 		if info.status == "success" or info.status == "failure" or info.status == "pending" do

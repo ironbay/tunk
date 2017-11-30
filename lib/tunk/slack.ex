@@ -9,12 +9,12 @@ defmodule Tunk.Slack do
 			_ -> "https://github.com/" <> info.owner <> "/" <> info.repo <> "/tree/" <> info.branch
 		end
 
-		branch_display = "<#{branch_url}|#{String.capitalize(info.branch)}>"
+		branch_display = "<#{branch_url}|#{info.branch}>"
 
 		attachments = [
 			%{
 				"color": status_color(info.status), 
-				"text": "*Build Status*: #{String.capitalize(info.status)}\n*Logs*: <#{info.target_url}|Build details>\n*Context*: <#{context}|Container registry>\n*Branch*: #{branch_display}", 
+				"text": "*Build Status*: #{String.capitalize(info.status)}\n*<#{info.target_url}|Build details>*\n*<#{context}|Container registry>*\n*Branch*: #{branch_display}\n*Repo*: #{info.repo}\n*Images*: #{readable_list(info.images)}", 
 				"mrkdwn_in": ["text"]
 			}
 		] |> Poison.encode!
@@ -36,5 +36,10 @@ defmodule Tunk.Slack do
 			"success" -> "#006F13"
 			"failure" -> "#DC2B30"
 		end
+	end
+
+	def readable_list(images) do
+		images 
+		|> List.foldl("", fn(x, acc) -> acc <> x <> "\n" end)
 	end
 end
