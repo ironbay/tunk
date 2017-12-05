@@ -44,7 +44,7 @@ defmodule Tunk.Router do
 			images: images
 		}
 
-		if info.status == "success" or info.status == "failure" or info.status == "pending" do
+		if info.status != :noop do
 			Github.send(info)
 			Tunk.Slack.send(info)
 		else 
