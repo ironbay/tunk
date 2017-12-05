@@ -37,8 +37,8 @@ defmodule Tunk.Router do
 			sha: sha, 
 			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
 			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
-			repo: repo |> String.split("-") |> Enum.at(1), 
-			owner: repo |> String.split("-") |> Enum.at(2),
+			repo: repo |> String.split("-") |> Enum.at(2), 
+			owner: repo |> String.split("-") |> Enum.at(1),
 			status: translate(status), 
 			branch: branch, 
 			images: images
