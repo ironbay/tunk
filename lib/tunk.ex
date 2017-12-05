@@ -32,13 +32,14 @@ defmodule Tunk.Router do
 		"id" => id, 
 		"projectId" => project_id, 
 		"source" => %{"repoSource" => %{"branchName" => branch}}
-	}) do 		
+	}) do
+		[_, owner, repository] = repo |> String.split("-")
 		info = %{
 			sha: sha, 
 			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
 			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
-			repo: repo |> String.split("-") |> Enum.at(2), 
-			owner: repo |> String.split("-") |> Enum.at(1),
+			repo: repository, 
+			owner: owner,
 			status: translate(status), 
 			branch: branch, 
 			images: images
