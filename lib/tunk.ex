@@ -52,6 +52,8 @@ defmodule Tunk.Router do
 		end
 	end 
 
+	def process(%{}), do: :noop
+
 	def translate(status) do
 		case status do
 			"SUCCESS" -> "success"
