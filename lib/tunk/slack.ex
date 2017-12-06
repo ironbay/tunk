@@ -14,7 +14,7 @@ defmodule Tunk.Slack do
 		attachments = [
 			%{
 				"color": status_color(info.status), 
-				"text": "*Build Status*: #{String.capitalize(info.status)}\n*<#{info.target_url}|Build details>*\n*<#{context}|Container registry>*\n*Branch*: #{branch_display}\n*Repo*: #{info.repo}\n*Images*: #{readable_list(info.images)}", 
+				"text": "*Build Status*: #{String.capitalize(info.status)}\n*<#{info.target_url}|Build details>*\n*Branch*: #{branch_display}\n*Repo*: #{info.repo}\n*Images*: #{readable_list(info.images)}\n*<#{context}|Container registry>*", 
 				"mrkdwn_in": ["text"]
 			}
 		] |> Poison.encode!
