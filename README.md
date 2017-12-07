@@ -22,7 +22,7 @@ Both integrations are options. In `lib/tunk/config`, enable integrations by sett
 ```
 # lib/tunk/config.ex
 
-slack: {
+slack: %{
 	token: nil, 
 	channel: nil, 
 	enabled: true	

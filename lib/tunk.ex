@@ -60,23 +60,21 @@ defmodule Tunk.Router do
 	def extract(%{}), do: :noop
 
 	def enabled do
-		%{
-			slack: Config.tunk_slack_enabled(), 
-			github: Config.tunk_github_enabled()
-		}
+		[
+			(if Config.tunk_slack_enabled(), do: Tunk.Slack, else: nil),
+			(if Config.tunk_github_enabled(), do: Tunk.Github, else: nil)
+		]
+		|> Enum.filter(&(&1 !== nil))
 	end 
 
 	def broadcast(info) do
-		enabled = enabled()
-		
 		if info.status != :noop do
-			if enabled.github, do: Github.send(info)
-			if enabled.slack, do: Tunk.Slack.send(info)
+			enabled()
+			|> Enum.each(fn(x) -> x.send(info) end)
 		else 
 			:noop
-		end
-	end 
-
+		end 
+	end
 
 	def translate(status) do
 		case status do 

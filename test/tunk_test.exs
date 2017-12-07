@@ -25,16 +25,17 @@ defmodule TunkTest do
 	end 
 	
 	test "Tunk.Router.enabled correctly enables features" do 
-		enabled = %{
-			token: nil, 
-			channel: nil, 
+		github = %{
+			user: nil, 
+			auth: nil, 
 			enabled: true
 		}
+
+		Application.put_env(:tunk, :github, github)
+		enabled_list = Tunk.Router.enabled
 		
-		Application.put_env(:tunk, :github, enabled)
-		
-		assert Tunk.Router.enabled.github == true
-		assert Tunk.Router.enabled.slack == false
+		assert enabled_list |> Enum.member?(Tunk.Github) == true 
+		assert enabled_list |> Enum.member?(Tunk.Slack) == false
 	end
 end
 
