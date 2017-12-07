@@ -3,7 +3,7 @@ defmodule Tunk.Github do
 
 	def send(info) do 
 		Tentacat.Repositories.Statuses.create(
-			Config.tunk_github_user, 
+			Config.tunk_github_user(), 
 			info.repo, 
 			info.sha,
 			%{
@@ -13,7 +13,7 @@ defmodule Tunk.Github do
 				"context": info.context
 			},
 			Tentacat.Client.new(%{
-				access_token: Config.tunk_github_auth
+				access_token: Config.tunk_github_auth()
 			})
 		)
 	end 

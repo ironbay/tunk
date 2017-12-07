@@ -20,10 +20,10 @@ defmodule Tunk.Slack do
 			}
 		] |> Poison.encode!
 		
-		Config.tunk_slack_channel 
+		Config.tunk_slack_channel() 
 		|> Slack.post_message("", 
 			%{
-				token: Config.tunk_slack_token, 
+				token: Config.tunk_slack_token(),
 				username: "Tunk", 
 				icon_emoji: ":chart_with_upwards_trend:",
 				attachments: [attachments] 
