@@ -34,8 +34,7 @@ defmodule TunkTest do
 		Application.put_env(:tunk, :github, github)
 		enabled_list = Tunk.Router.enabled
 		
-		assert enabled_list |> Enum.member?(Tunk.Github) == true 
-		assert enabled_list |> Enum.member?(Tunk.Slack) == false
+		assert enabled_list == [Tunk.Github]
 	end
 end
 
