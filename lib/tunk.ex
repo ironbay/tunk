@@ -15,34 +15,25 @@ defmodule Tunk.Router do
 	end
 
 	post "/gcp/message" do
-		{:ok, body , _} = Plug.Conn.read_body(conn)
+		{:ok, body , _} = Plug.Conn.read_body(conn)	
+		process(body)
+		send_resp(conn, 200, "")
+	end
 
-		format = body 
+	def process(body) do 
+		body 
+		|> format 
+		|> broadcast
+	end
+
+	def format(body) do 
+		body 
 		|> Poison.decode!
 		|> Dynamic.get(["message", "data"])
 		|> Base.decode64!
 		|> Poison.decode!
 		|> extract
-		|> broadcast
-
-		send_resp(conn, 200, format |> Poison.encode!)
-	end
-
-	get "/" do
-		{:ok, body, _} = Plug.Conn.read_body(conn)
-
-		IO.inspect(body)
-
-		send_resp(conn, 200, "totally rad")
-	end
-
-	post "/" do
-		{:ok, body, _} = Plug.Conn.read_body(conn)
-
-		body |> IO.inspect
-
-		send_resp(conn, 200, "wow")
-	end
+	end 
 
 	def extract (%{
 		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha, "repoName" => repo}}, 
