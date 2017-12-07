@@ -23,5 +23,18 @@ defmodule TunkTest do
 		{:ok, %{status_code: status_code}} = HTTPoison.post("localhost:4000/gcp/message", @data)
 		assert status_code == 200
 	end 
+	
+	test "Tunk.Router.enabled correctly enables features" do 
+		enabled = %{
+			token: nil, 
+			channel: nil, 
+			enabled: true
+		}
+		
+		Application.put_env(:tunk, :github, enabled)
+		
+		assert Tunk.Router.enabled.github == true
+		assert Tunk.Router.enabled.slack == false
+	end
 end
 

@@ -17,6 +17,18 @@ end
 
 The web server runs on port 4000, which can be swapped out in the Dockerfile.
 
+Both integrations are options. In `lib/tunk/config`, enable integrations by setting the `enabled` field to `true`: 
+
+```
+# lib/tunk/config.ex
+
+slack: {
+	token: nil, 
+	channel: nil, 
+	enabled: true	
+}
+```
+
 There are some env variables that need to get set properly:
 
 |name|description|
