@@ -1,5 +1,6 @@
 defmodule Tunk.Slack do
 	alias Slack.Web.Chat, as: Slack
+	alias Tunk.Config
 	
 	def send(info) do
 		context = "http://" <> info.context
@@ -19,10 +20,10 @@ defmodule Tunk.Slack do
 			}
 		] |> Poison.encode!
 		
-		Tunk.Config.slack_channel()
+		Config.tunk_slack_channel() 
 		|> Slack.post_message("", 
 			%{
-				token: Tunk.Config.slack_token(), 
+				token: Config.tunk_slack_token(),
 				username: "Tunk", 
 				icon_emoji: ":chart_with_upwards_trend:",
 				attachments: [attachments] 

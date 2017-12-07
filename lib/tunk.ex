@@ -2,6 +2,7 @@ defmodule Tunk.Router do
 	use Plug.Router
 	require Logger
 	alias Tunk.Github
+	alias Tunk.Config
 
 	plug :match 
 	plug :dispatch
@@ -58,15 +59,22 @@ defmodule Tunk.Router do
 
 	def extract(%{}), do: :noop
 
-	def broadcast(info) do
-		if info.status != :noop do
-			Github.send(info)
-			Tunk.Slack.send(info)
-		else 
-			:noop
-		end
+	def enabled do
+		[
+			(if Config.tunk_slack_enabled(), do: Tunk.Slack, else: nil),
+			(if Config.tunk_github_enabled(), do: Tunk.Github, else: nil)
+		]
+		|> Enum.filter(&(&1 !== nil))
 	end 
 
+	def broadcast(info) do
+		if info.status != :noop do
+			enabled()
+			|> Enum.each(fn(x) -> x.send(info) end)
+		else 
+			:noop
+		end 
+	end
 
 	def translate(status) do
 		case status do 

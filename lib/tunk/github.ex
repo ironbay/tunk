@@ -1,7 +1,9 @@
 defmodule Tunk.Github do 
+	alias Tunk.Config
+
 	def send(info) do 
 		Tentacat.Repositories.Statuses.create(
-			Tunk.Config.github_user(), 
+			Config.tunk_github_user(), 
 			info.repo, 
 			info.sha,
 			%{
@@ -11,7 +13,7 @@ defmodule Tunk.Github do
 				"context": info.context
 			},
 			Tentacat.Client.new(%{
-				access_token: Tunk.Config.github_auth()
+				access_token: Config.tunk_github_auth()
 			})
 		)
 	end 
