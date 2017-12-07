@@ -6,7 +6,9 @@ defmodule Tunk.Router do
 	plug :match 
 	plug :dispatch
 
-	def init(options), do: options
+	def init(options) do 
+		options
+	end
 
 	def start_link() do
 		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
@@ -14,16 +16,24 @@ defmodule Tunk.Router do
 
 	post "/gcp/message" do
 		{:ok, body , _} = Plug.Conn.read_body(conn)
-		
-		body 
+
+		format = body 
 		|> Poison.decode!
 		|> Dynamic.get(["message", "data"])
 		|> Base.decode64!
 		|> Poison.decode!
-		|> IO.inspect
 		|> extract
 		|> broadcast
-		send_resp(conn, 200, "")
+
+		send_resp(conn, 200, format |> Poison.encode!)
+	end
+
+	get "/" do
+		{:ok, body, _} = Plug.Conn.read_body(conn)
+
+		IO.inspect(body)
+
+		send_resp(conn, 200, "totally rad")
 	end
 
 	post "/" do
@@ -52,7 +62,7 @@ defmodule Tunk.Router do
 			status: translate(status), 
 			branch: branch, 
 			images: images
-		}
+		} 
 	end 
 
 	def extract(%{}), do: :noop

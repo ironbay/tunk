@@ -1,4 +1,4 @@
-{
+{"message": {"data" : {
 	"buildTriggerId":"c73d304b-3d55-4ff3-bea7-3934b8ad2f6c",
 	"createTime":"2017-12-05T22:28:07.137594030Z",
 	"finishTime":"2017-12-05T22:29:15.888461Z",
@@ -58,4 +58,4 @@
 	   }
 	],
 	"timeout":"600.000s"
- }
+ }}}
