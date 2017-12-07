@@ -18,13 +18,13 @@ end
 The web server runs on port 4000, which can be swapped out in the Dockerfile.
 
 There are some env variables that need to get set properly:
+
 |name|description|
-|--- |---
+|--- |---|
 GITHUB_AUTH|Github authorization. Needs to have "commit statuses" set.
 GITHUB_USER|Github user with authorization|
 SLACK_CHANNEL|The name of the slack channel to post statuses. 
 SLACK_TOKEN|Slack API token
-```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
