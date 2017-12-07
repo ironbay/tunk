@@ -28,7 +28,7 @@ defmodule Tunk.Mixfile do
 			{:poison, "~> 3.1"}, 
 			{:dynamic_ex, github: "ironbay/dynamic_ex"},
 			{:fig, github: "ironbay/fig"},
-			{:httpotion, "~> 3.0.3"}, 
+			{:httpoison, "~> 0.13"},
 			{:tentacat, "~> 0.5"}, 
 			{:distillery, "~> 1.4", runtime: false},
 			{:slack, "~> 0.12.0"}, 
