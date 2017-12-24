@@ -33,10 +33,12 @@ There are some env variables that need to get set properly:
 
 |name|description|
 |--- |---|
-GITHUB_AUTH|Set up a [access_token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) and enable `commit statuses`
-GITHUB_USER|The github user who owns the given repo. For example if the repo was `https://github.com/ironbay/tunk`, this would be the string "ironbay"|
-SLACK_CHANNEL|The name of the slack channel to post statuses, in the format `#mychannel`. 
-SLACK_TOKEN|Set up a [new bot user integration](https://slack.com/signin?redir=%2Fservices%2Fnew%2Fbot) to get a user token.
+TUNK_GITHUB_AUTH|Set up a [access_token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) and enable `commit statuses`
+TUNK_GITHUB_USER|The github user who owns the given repo. For example if the repo was `https://github.com/ironbay/tunk`, this would be the string "ironbay"|
+TUNK_SLACK_CHANNEL|The name of the slack channel to post statuses, in the format `#mychannel`. 
+TUNK_SLACK_TOKEN|Set up a [new bot user integration](https://slack.com/signin?redir=%2Fservices%2Fnew%2Fbot) to get a user token.
+
+Tunk uses the [`Fig`](https://github.com/ironbay/fig) library for handling configuration. 
 
 You can add your own integrations easily. Add them in the same format as slack and github in `lib/tunk/config.ex`. Then 
 name your module accoding to the config (i.e. if you add `new` to your config, create a `Tunk.New` module inside of lib. 
