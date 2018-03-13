@@ -23,8 +23,11 @@ defmodule Tunk.Router do
 
 	def process(body) do 
 		body 
-		|> format 
-		|> broadcast
+		|> format
+		|> case do 
+			:noop -> :noop 
+			info -> broadcast(info)
+		end
 	end
 
 	def format(body) do 
@@ -68,12 +71,8 @@ defmodule Tunk.Router do
 	end 
 
 	def broadcast(info) do
-		if info.status != :noop do
-			enabled()
-			|> Enum.each(fn(x) -> x.send(info) end)
-		else 
-			:noop
-		end 
+		enabled()
+		|> Enum.each(fn(x) -> x.send(info) end)
 	end
 
 	def translate(status) do
