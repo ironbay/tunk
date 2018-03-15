@@ -23,44 +23,58 @@ defmodule Tunk.Router do
 
 	def process(body) do 
 		body 
-		|> format
+		|> get_data_field
 		|> case do 
-			:noop -> :noop 
-			info -> broadcast(info)
+			nil -> :noop 
+			data -> 
+				data
+				|> Base.decode64!
+				|> Poison.decode!
+				|> extract
+				|> broadcast
+				:success
 		end
 	end
 
-	def format(body) do 
+	def get_data_field(body) do 
 		body 
 		|> Poison.decode!
-		|> Dynamic.get(["message", "data"])
-		|> Base.decode64!
-		|> Poison.decode!
-		|> extract
+		|> Dynamic.get(["message", "data"]) 
 	end 
 
-	def extract (%{
-		"sourceProvenance" => %{"resolvedRepoSource" => %{"commitSha" => sha, "repoName" => repo}}, 
-		"status" => status, 
-		"images" => images, 
-		"id" => id, 
-		"projectId" => project_id, 
-		"source" => %{"repoSource" => %{"branchName" => branch}}
-	}) do
-		[_, owner | rest] = repo |> String.split("-")
-		%{
-			sha: sha, 
-			context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
-			target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
-			repo: rest |> Enum.join("-"), 
-			owner: owner,
-			status: translate(status), 
-			branch: branch, 
-			images: images
-		} 
-	end 
+	def extract(message) do 
+		case message do 
+			%{
+				"sourceProvenance" => %{
+					"resolvedRepoSource" => %{
+						"commitSha" => sha, "repoName" => repo}
+					}, 
+				"status" => status, 
+				"images" => images, 
+				"id" => id, 
+				"projectId" => project_id, 
+				"source" => %{
+					"repoSource" => %{
+						"branchName" => branch
+					}
+				}
+			} -> 
+				[_, owner | rest] = repo |> String.split("-")
+				%{
+					sha: sha, 
+					context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
+					target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
+					repo: rest |> Enum.join("-"), 
+					owner: owner,
+					status: translate(status), 
+					branch: branch, 
+					images: images
+				} 
 
-	def extract(%{}), do: :noop
+			_ ->
+				:noop
+		end 
+	end 
 
 	def enabled do
 		[
