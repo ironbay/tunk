@@ -20,7 +20,7 @@ defmodule TunkTest do
 	@incoming "{\"target_url\":\"https://console.cloud.google.com/gcr/builds/de4348a8-4dz4-5216-8028-6f0cc171e16f?project=myorganization-production\",\"status\":\"success\",\"sha\":\"f08bc29071450ecfa663aded78aad555d54d4def\",\"repo\":\"myorganization\",\"owner\":\"greatgroup\",\"images\":[\"gcr.io/myorganization-production/elixir:master\"],\"context\":\"gcr.io/myorganization-production/elixir\",\"branch\":\"master\"}"
 	
 	test "Tunk.Router.proces correctly extracts correct info" do
-		assert Tunk.Router.process(@data) == :success
+		assert Tunk.Router.process(@data) == :ok
 	end
 
 	test "Tunk.Router.process handles empty case" do 
@@ -41,7 +41,7 @@ defmodule TunkTest do
 		Application.put_env(:tunk, :github, github)
 		enabled_list = Tunk.Router.enabled
 		
-		assert enabled_list == [Tunk.Github]
+		assert Enum.member?(enabled_list, Tunk.Github) == true
 	end
 end
 

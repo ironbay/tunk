@@ -22,9 +22,9 @@ defmodule Tunk.Router do
 	end
 
 	def process(body) do 
-		IO.inspect body
 		body 
 		|> get_data_field
+		|> IO.inspect
 		|> case do 
 			nil -> :noop 
 			data -> 
@@ -33,11 +33,8 @@ defmodule Tunk.Router do
 				|> Poison.decode!
 				|> extract 
 				|> case do 
-					:noop -> 
-						:noop 
-					message ->
-						broadcast(message)
-						:success 
+					:noop -> :noop 
+					message -> broadcast(message)
 				end
 		end
 	end
@@ -76,7 +73,6 @@ defmodule Tunk.Router do
 					branch: branch, 
 					images: images
 				} 
-
 			_ ->
 				:noop
 		end 

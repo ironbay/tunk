@@ -3,6 +3,13 @@ defmodule Tunk.Slack do
 	alias Tunk.Config
 	
 	def send(info) do
+		case Enum.member?(["pending", "success", "failure"], info.status) do 
+			true -> format(info)
+			false -> :noop
+		end 
+	end 
+
+	def format(info) do 
 		context = "http://" <> info.context
 
 		branch_url = case info.branch do
@@ -28,7 +35,7 @@ defmodule Tunk.Slack do
 				icon_emoji: ":chart_with_upwards_trend:",
 				attachments: [attachments] 
 			}
-		)
+		) 
 	end
 	
 	def status_color(status) do
@@ -36,6 +43,7 @@ defmodule Tunk.Slack do
 			"pending" -> "#FFA100"
 			"success" -> "#006F13"
 			"failure" -> "#DC2B30"
+			_ -> :noop
 		end
 	end
 
