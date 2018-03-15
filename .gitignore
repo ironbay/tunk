@@ -22,3 +22,5 @@ erl_crash.dump
 /env
 
 /.elixir_ls
+
+local
