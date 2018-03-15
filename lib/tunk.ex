@@ -22,6 +22,7 @@ defmodule Tunk.Router do
 	end
 
 	def process(body) do 
+		IO.inspect body
 		body 
 		|> get_data_field
 		|> case do 
