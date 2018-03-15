@@ -31,9 +31,14 @@ defmodule Tunk.Router do
 				data
 				|> Base.decode64!
 				|> Poison.decode!
-				|> extract
-				|> broadcast
-				:success
+				|> extract 
+				|> case do 
+					:noop -> 
+						:noop 
+					message ->
+						broadcast(message)
+						:success 
+				end
 		end
 	end
 
