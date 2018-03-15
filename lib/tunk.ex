@@ -23,8 +23,8 @@ defmodule Tunk.Router do
 
 	def process(body) do 
 		body 
-		|> get_data_field
 		|> IO.inspect
+		|> get_data_field
 		|> case do 
 			nil -> :noop 
 			data -> 

@@ -43,7 +43,6 @@ defmodule Tunk.Slack do
 			"pending" -> "#FFA100"
 			"success" -> "#006F13"
 			"failure" -> "#DC2B30"
-			_ -> :noop
 		end
 	end
 
