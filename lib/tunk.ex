@@ -20,6 +20,10 @@ defmodule Tunk.Router do
 		process(body)
 		send_resp(conn, 200, "")
 	end
+	
+	get "/" do
+	  send_resp(conn, 200, "ok")
+	end
 
 	def process(body) do 
 		body 
