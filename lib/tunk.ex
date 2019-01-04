@@ -66,7 +66,7 @@ defmodule Tunk.Router do
 					}
 				}
 			} -> 
-				[_, owner | rest] = repo |> String.split("-")
+				[_, owner | rest] = repo |> String.split("_")
 				%{
 					sha: sha, 
 					context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
