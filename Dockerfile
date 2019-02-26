@@ -1,5 +1,4 @@
-
-FROM elixir:1.5.2-alpine
+FROM elixir:1.8.1-alpine
 
 RUN apk add --no-cache git
 RUN apk add --no-cache alpine-sdk
@@ -23,7 +22,5 @@ RUN cp -a /tmp/deps .
 RUN cp -a /tmp/_build .
 RUN ls -lah
 RUN mix release
-
-EXPOSE 4000
 
 CMD mix run --no-halt
