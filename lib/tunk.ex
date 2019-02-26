@@ -1,106 +1,118 @@
-defmodule Tunk.Router do
-	use Plug.Router
-	require Logger
-	alias Tunk.Github
-	alias Tunk.Config
+defmodule Tunk do
+  require Logger
+  alias Tunk.Github
+  alias Tunk.Config
 
-	plug :match 
-	plug :dispatch
+  def tick() do
+    {:ok, token} = Gondola.for_scope("https://www.googleapis.com/auth/cloud-platform")
+    conn = GoogleApi.PubSub.V1.Connection.new(token.access_token)
 
-	def init(options) do 
-		options
-	end
+    {:ok, response} =
+      GoogleApi.PubSub.V1.Api.Projects.pubsub_projects_subscriptions_pull(
+        conn,
+        Config.tunk_google_project(),
+        Config.tunk_google_subscription(),
+        body: %GoogleApi.PubSub.V1.Model.PullRequest{
+          maxMessages: 10
+        }
+      )
 
-	def start_link() do
-		{:ok, _} = Plug.Adapters.Cowboy.http __MODULE__, []
-	end
+    if response.receivedMessages != nil do
+      Enum.each(response.receivedMessages, fn message ->
+        process(message.message.data)
 
-	post "/gcp/message" do
-		{:ok, body , _} = Plug.Conn.read_body(conn)	
-		process(body)
-		send_resp(conn, 200, "")
-	end
-	
-	get "/" do
-	  send_resp(conn, 200, "ok")
-	end
+        GoogleApi.PubSub.V1.Api.Projects.pubsub_projects_subscriptions_acknowledge(
+          conn,
+          Config.tunk_google_project(),
+          Config.tunk_google_subscription(),
+          body: %GoogleApi.PubSub.V1.Model.AcknowledgeRequest{
+            ackIds: [message.ackId]
+          }
+        )
+      end)
+    end
+  end
 
-	def process(body) do 
-		body 
-		|> IO.inspect
-		|> get_data_field
-		|> case do 
-			nil -> :noop 
-			data -> 
-				data
-				|> Base.decode64!
-				|> Poison.decode!
-				|> extract 
-				|> case do 
-					:noop -> :noop 
-					message -> broadcast(message)
-				end
-		end
-	end
+  def process(body) do
+    body
+    |> Base.decode64!()
+    |> Poison.decode!()
+    |> IO.inspect()
+    |> extract
+    |> case do
+      :noop -> :noop
+      message -> broadcast(message)
+    end
+  end
 
-	def get_data_field(body) do 
-		body 
-		|> Poison.decode!
-		|> Dynamic.get(["message", "data"]) 
-	end 
+  def get_data_field(body) do
+    body
+    |> Poison.decode!()
+    |> Dynamic.get(["message", "data"])
+  end
 
-	def extract(message) do 
-		case message do 
-			%{
-				"sourceProvenance" => %{
-					"resolvedRepoSource" => %{
-						"commitSha" => sha, "repoName" => repo}
-					}, 
-				"status" => status, 
-				"images" => images, 
-				"id" => id, 
-				"projectId" => project_id, 
-				"source" => %{
-					"repoSource" => %{
-						"branchName" => branch
-					}
-				}
-			} -> 
-				[_, owner | rest] = repo |> String.split("_")
-				%{
-					sha: sha, 
-					context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
-					target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}", 
-					repo: rest |> Enum.join("-"), 
-					owner: owner,
-					status: translate(status), 
-					branch: branch, 
-					images: images
-				} 
-			_ ->
-				:noop
-		end 
-	end 
+  def extract(message) do
+    case message do
+      %{
+        "sourceProvenance" => %{
+          "resolvedRepoSource" => %{"commitSha" => sha, "repoName" => repo}
+        },
+        "status" => status,
+        "images" => images,
+        "id" => id,
+        "projectId" => project_id,
+        "source" => %{
+          "repoSource" => %{
+            "branchName" => branch
+          }
+        }
+      } ->
+        splits =
+          case String.contains?(repo, "_") do
+            true ->
+              String.split(repo, "_")
 
-	def enabled do
-		[
-			(if Config.tunk_slack_enabled(), do: Tunk.Slack, else: nil),
-			(if Config.tunk_github_enabled(), do: Tunk.Github, else: nil)
-		]
-		|> Enum.filter(&(&1 !== nil))
-	end 
+            false ->
+              String.split(repo, "-")
+          end
 
-	def broadcast(info) do
-		enabled()
-		|> Enum.each(fn(x) -> x.send(info) end)
-	end
+        [_, owner | rest] = splits
 
-	def translate(status) do
-		case status do 
-			"SUCCESS" -> String.downcase(status)
-			"FAILURE" -> String.downcase(status)
-			"WORKING" -> "pending"
-			_ -> :noop
-		end 
-	end
+        %{
+          sha: sha,
+          context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
+          target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}",
+          repo: rest |> Enum.join("-"),
+          owner: owner,
+          status: translate(status),
+          branch: branch,
+          images: images
+        }
+
+      _ ->
+        :noop
+    end
+  end
+
+  def enabled do
+    [
+      if(Config.tunk_slack_enabled(), do: Tunk.Slack, else: nil),
+      if(Config.tunk_github_enabled(), do: Tunk.Github, else: nil)
+    ]
+    |> Enum.filter(&(&1 !== nil))
+  end
+
+  def broadcast(info) do
+    enabled()
+    |> Enum.each(fn x -> x.send(info) end)
+  end
+
+  def translate(status) do
+    case status do
+      "SUCCESS" -> String.downcase(status)
+      "FAILURE" -> String.downcase(status)
+      "WORKING" -> "pending"
+      _ -> :noop
+    end
+  end
 end
