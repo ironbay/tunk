@@ -58,7 +58,6 @@ defmodule Tunk do
           "resolvedRepoSource" => %{"commitSha" => sha, "repoName" => repo}
         },
         "status" => status,
-        "images" => images,
         "id" => id,
         "projectId" => project_id,
         "source" => %{
@@ -86,7 +85,7 @@ defmodule Tunk do
           owner: owner,
           status: translate(status),
           branch: branch,
-          images: images
+          images: []
         }
 
       _ ->
