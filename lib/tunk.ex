@@ -79,7 +79,7 @@ defmodule Tunk do
 
         %{
           sha: sha,
-          context: images |> Enum.at(0) |> String.split(":") |> Enum.at(0),
+          context: "",
           target_url: "https://console.cloud.google.com/gcr/builds/#{id}?project=#{project_id}",
           repo: rest |> Enum.join("-"),
           owner: owner,
